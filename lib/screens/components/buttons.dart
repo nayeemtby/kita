@@ -6,10 +6,12 @@ import '../theme/texttheme.dart';
 class PrimaryBtn extends StatelessWidget {
   final String txt;
   final bool primary;
+  final void Function() onTap;
   const PrimaryBtn({
     Key? key,
     required this.txt,
     this.primary = true,
+    required this.onTap,
   }) : super(key: key);
 
   @override
@@ -17,7 +19,7 @@ class PrimaryBtn extends StatelessWidget {
     return SizedBox(
       width: double.infinity,
       child: ElevatedButton(
-        onPressed: () {},
+        onPressed: onTap,
         child: Text(
           txt,
           style: TxtTheme.med17.copyWith(
