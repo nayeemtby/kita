@@ -1,5 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/login.dart';
+import 'package:kita/screens/signup.dart';
 import 'components/buttons.dart';
 import 'theme/texttheme.dart';
 import 'theme/colors.dart';
@@ -15,9 +18,9 @@ class WelcomeScr extends StatelessWidget {
         width: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/welcome.png'),
-            fit: BoxFit.cover,
-          ),
+              image: AssetImage('assets/welcome.png'),
+              fit: BoxFit.cover,
+              alignment: Alignment.topCenter),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -44,13 +47,31 @@ class WelcomeScr extends StatelessWidget {
             SizedBox(
               height: 42.h,
             ),
-            const PrimaryBtn(txt: 'Login'),
+            PrimaryBtn(
+              txt: 'Login',
+              onTap: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (ctx) => const LoginScr(),
+                  ),
+                );
+              },
+            ),
             SizedBox(
               height: 13.h,
             ),
-            const PrimaryBtn(
+            PrimaryBtn(
               txt: 'Sign Up',
               primary: false,
+              onTap: () {
+                Navigator.push(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (ctx) => const SignupScr(),
+                  ),
+                );
+              },
             )
           ],
         ),

@@ -14,9 +14,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
-      builder: () => const MaterialApp(
+      builder: () => MaterialApp(
+        theme: ThemeData(fontFamily: 'MRB'),
         debugShowCheckedModeBanner: false,
-        home: WelcomeScr(),
+        home: const WelcomeScr(),
       ),
     );
   }
