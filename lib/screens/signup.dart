@@ -1,6 +1,9 @@
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/components/firebase.dart';
+import 'package:kita/screens/home.dart';
 import 'package:kita/screens/login.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
@@ -8,13 +11,18 @@ import 'components/input.dart';
 import 'components/buttons.dart';
 
 class SignupScr extends StatefulWidget {
-  const SignupScr({Key? key}) : super(key: key);
+  const SignupScr({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SignupScr> createState() => _SignupScrState();
 }
 
 class _SignupScrState extends State<SignupScr> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
   int _gender = 0;
   @override
   Widget build(BuildContext context) {
@@ -102,13 +110,17 @@ class _SignupScrState extends State<SignupScr> {
               SizedBox(
                 height: 12.h,
               ),
-              TxtInput(hint: 'Email'),
+              TxtInput(
+                hint: 'Email',
+                controller: _emailController,
+              ),
               SizedBox(
                 height: 12.h,
               ),
               TxtInput(
                 hint: 'Password',
                 password: true,
+                controller: _passwordController,
                 suffix: Icon(
                   Icons.visibility,
                   color: MyColors.secondaryBlack,
@@ -193,7 +205,23 @@ class _SignupScrState extends State<SignupScr> {
               ),
               PrimaryBtn(
                 txt: 'Sign up',
-                onTap: () {},
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        color: MyColors.primaryWhite,
+                      )
+                    : null,
+                onTap: isLoading
+                    ? null
+                    : () {
+                        _handleSignUp(
+                          _emailController.value.text,
+                          _passwordController.value.text,
+                          context,
+                        );
+                        setState(() {
+                          isLoading = !isLoading;
+                        });
+                      },
               ),
               Expanded(
                   child: Center(
@@ -229,5 +257,24 @@ class _SignupScrState extends State<SignupScr> {
         ),
       ),
     ));
+  }
+
+  void _handleSignUp(String email, String password, BuildContext ctx) async {
+    final response = await signUp(email, password);
+    if (response.runtimeType == FirebaseAccount) {
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (ctx) => const HomeScr(),
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text('Error: ${response.toString()}'),
+          actions: [],
+        ),
+      );
+    }
   }
 }
