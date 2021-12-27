@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/login.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 import 'components/input.dart';
@@ -195,28 +196,32 @@ class _SignupScrState extends State<SignupScr> {
                 onTap: () {},
               ),
               Expanded(
-                  child: Padding(
-                padding: EdgeInsets.only(bottom: 36.h),
-                child: Center(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        'Already have an account? ',
-                        style: TxtTheme.med16.copyWith(
-                          color: MyColors.secondaryBlack,
-                        ),
+                  child: Center(
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      'Already have an account? ',
+                      style: TxtTheme.med16.copyWith(
+                        color: MyColors.secondaryBlack,
                       ),
-                      CupertinoButton(
-                        padding: const EdgeInsets.all(0),
-                        child: Text(
-                          'Login',
-                          style: TxtTheme.med16,
-                        ),
-                        onPressed: () {},
-                      )
-                    ],
-                  ),
+                    ),
+                    CupertinoButton(
+                      padding: const EdgeInsets.all(0),
+                      child: Text(
+                        'Login',
+                        style: TxtTheme.med16,
+                      ),
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                            builder: (ctx) => const LoginScr(),
+                          ),
+                        );
+                      },
+                    )
+                  ],
                 ),
               ))
             ],
