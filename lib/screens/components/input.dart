@@ -7,11 +7,13 @@ class TxtInput extends StatelessWidget {
   final String hint;
   final bool password;
   final Widget? suffix;
+  final Widget? leading;
   const TxtInput({
     Key? key,
     required this.hint,
     this.password = false,
     this.suffix,
+    this.leading,
   }) : super(key: key);
 
   @override
@@ -23,6 +25,7 @@ class TxtInput extends StatelessWidget {
         color: MyColors.primaryBlack,
       ),
       decoration: InputDecoration(
+        prefixIcon: leading,
         label: Text(
           hint,
         ),
