@@ -132,7 +132,6 @@ class _SignupScrState extends State<SignupScr> {
               ),
               TxtInput(
                 hint: 'Mobile Number',
-                password: true,
                 suffix: CupertinoButton(
                   child: Text(
                     'Verify',
@@ -207,7 +206,7 @@ class _SignupScrState extends State<SignupScr> {
                 txt: 'Sign up',
                 child: isLoading
                     ? const CircularProgressIndicator(
-                        color: MyColors.primaryWhite,
+                        color: MyColors.deepBlack,
                       )
                     : null,
                 onTap: isLoading
@@ -262,10 +261,13 @@ class _SignupScrState extends State<SignupScr> {
   void _handleSignUp(String email, String password, BuildContext ctx) async {
     final response = await signUp(email, password);
     if (response.runtimeType == FirebaseAccount) {
+      final UserData? data = await (response as FirebaseAccount).getDetails();
       Navigator.pushReplacement(
         context,
         CupertinoPageRoute(
-          builder: (ctx) => const HomeScr(),
+          builder: (ctx) => HomeScr(
+            data: data,
+          ),
         ),
       );
     } else {
