@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kita/screens/welcome.dart';
 import 'screens/splash.dart';
 
 void main() {
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
       builder: () => MaterialApp(
         theme: ThemeData(fontFamily: 'MRB'),
         debugShowCheckedModeBanner: false,
-        home: const WelcomeScr(),
+        home: const SplashScr(),
       ),
     );
   }
