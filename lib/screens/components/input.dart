@@ -8,17 +8,20 @@ class TxtInput extends StatelessWidget {
   final bool password;
   final Widget? suffix;
   final Widget? leading;
+  final TextEditingController? controller;
   const TxtInput({
     Key? key,
     required this.hint,
     this.password = false,
     this.suffix,
     this.leading,
+    this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
+      controller: controller,
       obscureText: password,
       cursorColor: MyColors.deepBlack,
       style: TxtTheme.reg16.copyWith(
