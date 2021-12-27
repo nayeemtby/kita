@@ -101,12 +101,11 @@ class LoginScr extends StatelessWidget {
                         PrimaryBtn(
                           txt: 'Login',
                           onTap: () {
-                            Navigator.pushAndRemoveUntil(
+                            Navigator.pushReplacement(
                               context,
                               CupertinoPageRoute(
                                 builder: (ctx) => const HomeScr(),
                               ),
-                              (route) => !Navigator.canPop(context),
                             );
                           },
                         ),
