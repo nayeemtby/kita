@@ -29,7 +29,7 @@ class _HomeScrState extends State<HomeScr> {
     const ProfilePage(),
   ];
   int _pageIndex = 1;
-  Widget _page = SizedBox();
+  Widget _page = const SizedBox();
 
   @override
   Widget build(BuildContext context) {

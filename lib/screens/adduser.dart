@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kita/screens/login.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 import 'components/input.dart';
@@ -32,6 +31,7 @@ class _AddUserPageState extends State<AddUserPage> {
               vertical: 14.h,
             ),
             child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 CupertinoButton(
                   padding: const EdgeInsets.all(0),
@@ -48,6 +48,15 @@ class _AddUserPageState extends State<AddUserPage> {
                   onPressed: () {
                     widget.parentSetState(() {});
                   },
+                ),
+                Text(
+                  'Add New User',
+                  style: TxtTheme.med18.copyWith(
+                    color: MyColors.deepBlack,
+                  ),
+                ),
+                SizedBox(
+                  width: 24.sp,
                 ),
               ],
             ),

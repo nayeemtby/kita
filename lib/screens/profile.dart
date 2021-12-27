@@ -1,11 +1,7 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:kita/screens/components/users.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
-import 'components/input.dart';
-import 'components/buttons.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({Key? key}) : super(key: key);
