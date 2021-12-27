@@ -5,14 +5,26 @@ import '../theme/texttheme.dart';
 
 class PrimaryBtn extends StatelessWidget {
   final String txt;
+  Widget? child;
   final bool primary;
-  final void Function() onTap;
-  const PrimaryBtn({
+  final bool disabled;
+  final void Function()? onTap;
+  PrimaryBtn({
     Key? key,
     required this.txt,
     this.primary = true,
     required this.onTap,
-  }) : super(key: key);
+    this.child,
+    this.disabled = false,
+  }) : super(key: key) {
+    child == null
+        ? null
+        : child = SizedBox.square(
+            dimension:
+                getTxtSize(txt: txt, factor: 1, style: TxtTheme.med17).height,
+            child: child,
+          );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,12 +32,17 @@ class PrimaryBtn extends StatelessWidget {
       width: double.infinity,
       child: ElevatedButton(
         onPressed: onTap,
-        child: Text(
-          txt,
-          style: TxtTheme.med17.copyWith(
-            color: primary ? MyColors.primaryWhite : MyColors.deepBlack,
-          ),
-        ),
+        child: child ??
+            SizedBox(
+              height:
+                  getTxtSize(txt: txt, factor: 1, style: TxtTheme.med17).height,
+              child: Center(
+                child: Text(
+                  txt,
+                  style: TxtTheme.med17,
+                ),
+              ),
+            ),
         style: ElevatedButton.styleFrom(
           padding: EdgeInsets.symmetric(vertical: 13.sp),
           primary: primary ? MyColors.primaryBlack : MyColors.secondaryWhite,
@@ -37,4 +54,18 @@ class PrimaryBtn extends StatelessWidget {
       ),
     );
   }
+}
+
+Size getTxtSize(
+    {required String txt,
+    int maxLines = 1,
+    required double factor,
+    required TextStyle style}) {
+  return (TextPainter(
+          maxLines: maxLines,
+          text: TextSpan(text: txt, style: style),
+          textDirection: TextDirection.ltr,
+          textScaleFactor: factor)
+        ..layout())
+      .size;
 }
