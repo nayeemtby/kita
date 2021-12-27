@@ -1,5 +1,9 @@
+import 'dart:async';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:kita/screens/theme/texttheme.dart';
+import 'package:kita/screens/welcome.dart';
 import 'theme/colors.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -11,6 +15,19 @@ class SplashScr extends StatelessWidget {
     final double bigRadius = 254.r;
     final double mediumRadius = 78.r;
     final double smallRadius = 26.r;
+    Timer(
+      const Duration(
+        seconds: 2,
+      ),
+      () {
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (ctx) => const WelcomeScr(),
+          ),
+        );
+      },
+    );
     return Scaffold(
       body: SizedBox(
         width: double.infinity,
