@@ -1,3 +1,4 @@
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -9,7 +10,11 @@ import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 
 class HomeScr extends StatefulWidget {
-  const HomeScr({Key? key}) : super(key: key);
+  final UserData? data;
+  const HomeScr({
+    Key? key,
+    this.data,
+  }) : super(key: key);
   @override
   State<HomeScr> createState() => _HomeScrState();
 }
