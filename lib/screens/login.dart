@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/home.dart';
+import 'package:kita/screens/signup.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 import 'components/input.dart';
@@ -98,7 +100,15 @@ class LoginScr extends StatelessWidget {
                         ),
                         PrimaryBtn(
                           txt: 'Login',
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushAndRemoveUntil(
+                              context,
+                              CupertinoPageRoute(
+                                builder: (ctx) => const HomeScr(),
+                              ),
+                              (route) => !Navigator.canPop(context),
+                            );
+                          },
                         ),
                       ],
                     ),
@@ -126,7 +136,14 @@ class LoginScr extends StatelessWidget {
                               'Sign Up',
                               style: TxtTheme.med16,
                             ),
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (ctx) => const SignupScr(),
+                                ),
+                              );
+                            },
                           )
                         ],
                       ),
