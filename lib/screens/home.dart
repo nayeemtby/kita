@@ -11,9 +11,11 @@ import 'theme/texttheme.dart';
 
 class HomeScr extends StatefulWidget {
   final UserData? data;
+  final FirebaseAccount? account;
   const HomeScr({
     Key? key,
     this.data,
+    this.account,
   }) : super(key: key);
   @override
   State<HomeScr> createState() => _HomeScrState();
@@ -27,14 +29,24 @@ class _HomeScrState extends State<HomeScr> {
   }
 
   bool _addUser = false;
+
+  //Page List
   late List<Widget> pages = [
     UsersPage(
       showAddPage: showAddPage,
     ),
-    const ProfilePage(),
+    ProfilePage(
+      data: widget.data,
+    ),
   ];
   int _pageIndex = 1;
   Widget _page = const SizedBox();
+
+  @override
+  void dispose() {
+    widget.account?.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +62,9 @@ class _HomeScrState extends State<HomeScr> {
       child: Scaffold(
         bottomNavigationBar: ClipRRect(
           borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(50.r), topRight: Radius.circular(50.r)),
+            topLeft: Radius.circular(50.r),
+            topRight: Radius.circular(50.r),
+          ),
           child: BottomNavigationBar(
             currentIndex: _pageIndex,
             backgroundColor: MyColors.deepBlack,
@@ -94,11 +108,9 @@ class _HomeScrState extends State<HomeScr> {
             ],
           ),
         ),
-        body: SafeArea(
-          child: SizedBox(
-            width: double.infinity,
-            child: _page,
-          ),
+        body: SizedBox(
+          width: double.infinity,
+          child: _page,
         ),
       ),
     );
