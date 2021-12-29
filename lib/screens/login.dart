@@ -1,6 +1,8 @@
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/components/firebase.dart';
 import 'package:kita/screens/home.dart';
 import 'package:kita/screens/signup.dart';
 import 'theme/colors.dart';
@@ -8,9 +10,17 @@ import 'theme/texttheme.dart';
 import 'components/input.dart';
 import 'components/buttons.dart';
 
-class LoginScr extends StatelessWidget {
+class LoginScr extends StatefulWidget {
   const LoginScr({Key? key}) : super(key: key);
 
+  @override
+  State<LoginScr> createState() => _LoginScrState();
+}
+
+class _LoginScrState extends State<LoginScr> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -80,14 +90,16 @@ class LoginScr extends StatelessWidget {
                         SizedBox(
                           height: 100.h,
                         ),
-                        const TxtInput(
+                        TxtInput(
                           hint: 'Email',
+                          controller: _emailController,
                         ),
                         SizedBox(
                           height: 12.h,
                         ),
                         TxtInput(
                           hint: 'Password',
+                          controller: _passwordController,
                           password: true,
                           suffix: Icon(
                             Icons.visibility,
@@ -101,13 +113,22 @@ class LoginScr extends StatelessWidget {
                         PrimaryBtn(
                           txt: 'Login',
                           onTap: () {
-                            Navigator.pushReplacement(
-                              context,
-                              CupertinoPageRoute(
-                                builder: (ctx) => const HomeScr(),
-                              ),
-                            );
+                            if (!isLoading) {
+                              _handleLogin(
+                                _emailController.value.text,
+                                _passwordController.value.text,
+                                context,
+                              );
+                              setState(() {
+                                isLoading = true;
+                              });
+                            }
                           },
+                          child: isLoading
+                              ? const CircularProgressIndicator(
+                                  color: MyColors.deepBlack,
+                                )
+                              : null,
                         ),
                       ],
                     ),
@@ -124,7 +145,7 @@ class LoginScr extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            'Don’t have an account? ',
+                            'Don\'t have an account? ',
                             style: TxtTheme.med16.copyWith(
                               color: MyColors.secondaryBlack,
                             ),
@@ -155,5 +176,52 @@ class LoginScr extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _handleLogin(String email, String password, BuildContext ctx) async {
+    dynamic response;
+
+    try {
+      response = await login(
+        email,
+        password,
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text('Error: ${e.toString()}'),
+          actions: [
+            InkWell(
+              onTap: () {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              },
+              child: Icon(
+                Icons.close,
+                size: 24.sp,
+              ),
+            ),
+          ],
+        ),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+    if (response.runtimeType == FirebaseAccount) {
+      ScaffoldMessenger.of(context).clearMaterialBanners();
+      final UserData? data = await (response as FirebaseAccount).getDetails();
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (ctx) => HomeScr(
+            data: data,
+            account: response,
+          ),
+        ),
+      );
+    }
+    setState(() {
+      isLoading = false;
+    });
   }
 }
