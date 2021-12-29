@@ -231,6 +231,7 @@ class _SignupScrState extends State<SignupScr> {
                       'Already have an account? ',
                       style: TxtTheme.med16.copyWith(
                         color: MyColors.secondaryBlack,
+                        height: 1.4,
                       ),
                     ),
                     CupertinoButton(
@@ -259,22 +260,38 @@ class _SignupScrState extends State<SignupScr> {
   }
 
   void _handleSignUp(String email, String password, BuildContext ctx) async {
-    final response = await signUp(email, password);
+    dynamic response;
+    try {
+      response = await signUp(email, password);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text('Error: ${e.toString()}'),
+          actions: [
+            InkWell(
+              onTap: () {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              },
+              child: const Icon(Icons.close),
+            ),
+          ],
+        ),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
     if (response.runtimeType == FirebaseAccount) {
-      final UserData? data = await (response as FirebaseAccount).getDetails();
+      ScaffoldMessenger.of(context).clearMaterialBanners();
+      response = response as FirebaseAccount;
+      final UserData? data = await response.getDetails();
       Navigator.pushReplacement(
         context,
         CupertinoPageRoute(
           builder: (ctx) => HomeScr(
             data: data,
+            account: response,
           ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showMaterialBanner(
-        MaterialBanner(
-          content: Text('Error: ${response.toString()}'),
-          actions: [],
         ),
       );
     }
