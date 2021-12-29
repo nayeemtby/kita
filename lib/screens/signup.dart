@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 import 'components/input.dart';
 import 'components/buttons.dart';
+import 'package:file_picker/file_picker.dart';
 
 class SignupScr extends StatefulWidget {
   const SignupScr({
@@ -22,6 +24,7 @@ class SignupScr extends StatefulWidget {
 class _SignupScrState extends State<SignupScr> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  Uint8List? _imageData;
   bool isLoading = false;
   int _gender = 0;
   @override
@@ -84,17 +87,24 @@ class _SignupScrState extends State<SignupScr> {
                   children: [
                     CircleAvatar(
                       radius: 56.r,
+                      foregroundImage:
+                          _imageData == null ? null : MemoryImage(_imageData!),
                     ),
                     Positioned(
                       bottom: -10.r,
                       left: 5.r,
-                      child: CircleAvatar(
-                        radius: 20.r,
-                        backgroundColor: MyColors.deepBlack,
-                        child: Icon(
-                          Icons.camera_alt,
-                          size: 20.r,
-                          color: MyColors.primaryWhite,
+                      child: GestureDetector(
+                        onTap: () {
+                          _selectImage();
+                        },
+                        child: CircleAvatar(
+                          radius: 20.r,
+                          backgroundColor: MyColors.deepBlack,
+                          child: Icon(
+                            Icons.camera_alt,
+                            size: 20.r,
+                            color: MyColors.primaryWhite,
+                          ),
                         ),
                       ),
                     )
@@ -294,6 +304,18 @@ class _SignupScrState extends State<SignupScr> {
           ),
         ),
       );
+    }
+  }
+
+  void _selectImage() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      withData: true,
+      type: FileType.image,
+    );
+    if (result != null) {
+      setState(() {
+        _imageData = result.files[0].bytes;
+      });
     }
   }
 }
