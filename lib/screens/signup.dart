@@ -1,6 +1,9 @@
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/components/firebase.dart';
+import 'package:kita/screens/home.dart';
 import 'package:kita/screens/login.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
@@ -8,13 +11,18 @@ import 'components/input.dart';
 import 'components/buttons.dart';
 
 class SignupScr extends StatefulWidget {
-  const SignupScr({Key? key}) : super(key: key);
+  const SignupScr({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<SignupScr> createState() => _SignupScrState();
 }
 
 class _SignupScrState extends State<SignupScr> {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isLoading = false;
   int _gender = 0;
   @override
   Widget build(BuildContext context) {
@@ -102,13 +110,17 @@ class _SignupScrState extends State<SignupScr> {
               SizedBox(
                 height: 12.h,
               ),
-              TxtInput(hint: 'Email'),
+              TxtInput(
+                hint: 'Email',
+                controller: _emailController,
+              ),
               SizedBox(
                 height: 12.h,
               ),
               TxtInput(
                 hint: 'Password',
                 password: true,
+                controller: _passwordController,
                 suffix: Icon(
                   Icons.visibility,
                   color: MyColors.secondaryBlack,
@@ -120,7 +132,6 @@ class _SignupScrState extends State<SignupScr> {
               ),
               TxtInput(
                 hint: 'Mobile Number',
-                password: true,
                 suffix: CupertinoButton(
                   child: Text(
                     'Verify',
@@ -193,7 +204,23 @@ class _SignupScrState extends State<SignupScr> {
               ),
               PrimaryBtn(
                 txt: 'Sign up',
-                onTap: () {},
+                child: isLoading
+                    ? const CircularProgressIndicator(
+                        color: MyColors.deepBlack,
+                      )
+                    : null,
+                onTap: isLoading
+                    ? null
+                    : () {
+                        _handleSignUp(
+                          _emailController.value.text,
+                          _passwordController.value.text,
+                          context,
+                        );
+                        setState(() {
+                          isLoading = !isLoading;
+                        });
+                      },
               ),
               Expanded(
                   child: Center(
@@ -204,6 +231,7 @@ class _SignupScrState extends State<SignupScr> {
                       'Already have an account? ',
                       style: TxtTheme.med16.copyWith(
                         color: MyColors.secondaryBlack,
+                        height: 1.4,
                       ),
                     ),
                     CupertinoButton(
@@ -229,5 +257,43 @@ class _SignupScrState extends State<SignupScr> {
         ),
       ),
     ));
+  }
+
+  void _handleSignUp(String email, String password, BuildContext ctx) async {
+    dynamic response;
+    try {
+      response = await signUp(email, password);
+    } catch (e) {
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text('Error: ${e.toString()}'),
+          actions: [
+            InkWell(
+              onTap: () {
+                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+              },
+              child: const Icon(Icons.close),
+            ),
+          ],
+        ),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    }
+    if (response.runtimeType == FirebaseAccount) {
+      ScaffoldMessenger.of(context).clearMaterialBanners();
+      response = response as FirebaseAccount;
+      final UserData? data = await response.getDetails();
+      Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+          builder: (ctx) => HomeScr(
+            data: data,
+            account: response,
+          ),
+        ),
+      );
+    }
   }
 }

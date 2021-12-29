@@ -1,10 +1,15 @@
+import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 
 class ProfilePage extends StatelessWidget {
-  const ProfilePage({Key? key}) : super(key: key);
+  final UserData? data;
+  const ProfilePage({
+    Key? key,
+    this.data,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -54,7 +59,7 @@ class ProfilePage extends StatelessWidget {
                     height: 12.h,
                   ),
                   Text(
-                    'email@host.domain\nPassword',
+                    '${data == null ? 'user@host.domain' : data!.email ?? 'Has no Email'}\nPassword',
                     textAlign: TextAlign.center,
                     style: TxtTheme.med14
                         .copyWith(color: MyColors.deepBlack, height: 1.5.h),
