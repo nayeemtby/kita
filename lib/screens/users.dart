@@ -31,6 +31,7 @@ class UsersPage extends StatelessWidget {
         ),
         Divider(
           thickness: 1.sp,
+          height: 1.sp,
         ),
         Padding(
           padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
