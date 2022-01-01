@@ -51,6 +51,7 @@ class _SignupScrState extends State<SignupScr> {
                     vertical: 10.h,
                   ),
                   child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       CupertinoButton(
                         padding: const EdgeInsets.all(0),
@@ -73,6 +74,15 @@ class _SignupScrState extends State<SignupScr> {
                         onPressed: () {
                           Navigator.pop(context);
                         },
+                      ),
+                      Text(
+                        'Sign Up',
+                        style: TxtTheme.med18.copyWith(
+                          color: MyColors.deepBlack,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 56.sp,
                       ),
                     ],
                   ),
