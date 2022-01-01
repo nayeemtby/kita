@@ -36,7 +36,7 @@ class _AddUserPageState extends State<AddUserPage> {
           children: [
             Padding(
               padding: EdgeInsets.symmetric(
-                vertical: 10.h,
+                vertical: 14.h,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -64,7 +64,7 @@ class _AddUserPageState extends State<AddUserPage> {
                     ),
                   ),
                   SizedBox(
-                    width: 24.sp,
+                    width: 56.sp,
                   ),
                 ],
               ),
