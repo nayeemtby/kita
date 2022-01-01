@@ -25,152 +25,169 @@ class _LoginScrState extends State<LoginScr> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        body: SizedBox(
-          width: double.infinity,
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
-            child: Column(
-              children: [
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 14.h,
-                  ),
-                  child: Row(
-                    children: [
-                      CupertinoButton(
-                        padding: const EdgeInsets.all(0),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.arrow_back_ios_new_rounded,
-                              size: 17.sp,
-                              color: MyColors.primaryBlue,
-                            ),
-                            Text(
-                              'Back',
-                              style: TxtTheme.reg17.copyWith(
+        body: GestureDetector(
+          onTap: () {
+            FocusScopeNode currentFocus = FocusScope.of(context);
+
+            if (!currentFocus.hasPrimaryFocus) {
+              currentFocus.unfocus();
+            }
+          },
+          child: SizedBox(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.w),
+              child: Column(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                      vertical: 14.h,
+                    ),
+                    child: Row(
+                      children: [
+                        CupertinoButton(
+                          padding: const EdgeInsets.all(0),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.arrow_back_ios_new_rounded,
+                                size: 17.sp,
                                 color: MyColors.primaryBlue,
                               ),
-                            )
-                          ],
-                        ),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                    vertical: 40.h,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          'Login',
-                          style: TxtTheme.med32.copyWith(
-                            color: MyColors.deepBlack,
+                              Text(
+                                'Back',
+                                style: TxtTheme.reg17.copyWith(
+                                  color: MyColors.primaryBlue,
+                                ),
+                              )
+                            ],
                           ),
-                        ),
-                        SizedBox(
-                          height: 12.h,
-                        ),
-                        Text(
-                          'Enter your email address and password to access your account',
-                          style: TxtTheme.reg20.copyWith(
-                            color: MyColors.secondaryBlack,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 100.h,
-                        ),
-                        TxtInput(
-                          hint: 'Email',
-                          controller: _emailController,
-                        ),
-                        SizedBox(
-                          height: 12.h,
-                        ),
-                        TxtInput(
-                          hint: 'Password',
-                          controller: _passwordController,
-                          password: true,
-                          suffix: Icon(
-                            Icons.visibility,
-                            color: MyColors.secondaryBlack,
-                            size: 24.sp,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 60.h,
-                        ),
-                        PrimaryBtn(
-                          txt: 'Login',
-                          onTap: () {
-                            if (!isLoading) {
-                              _handleLogin(
-                                _emailController.value.text,
-                                _passwordController.value.text,
-                                context,
-                              );
-                              setState(() {
-                                isLoading = true;
-                              });
-                            }
+                          onPressed: () {
+                            Navigator.pop(context);
                           },
-                          child: isLoading
-                              ? const CircularProgressIndicator(
-                                  color: MyColors.primaryWhite,
-                                )
-                              : null,
                         ),
                       ],
                     ),
                   ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      bottom: 40.h,
-                    ),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: Row(
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(
-                            'Don\'t have an account? ',
-                            style: TxtTheme.med16.copyWith(
-                              color: MyColors.secondaryBlack,
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              vertical: 40.h,
+                            ),
+                            child: SizedBox(
+                              width: double.infinity,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Login',
+                                    style: TxtTheme.med32.copyWith(
+                                      color: MyColors.deepBlack,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 12.h,
+                                  ),
+                                  Text(
+                                    'Enter your email address and password to access your account',
+                                    style: TxtTheme.reg20.copyWith(
+                                      color: MyColors.secondaryBlack,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 100.h,
+                                  ),
+                                  TxtInput(
+                                    hint: 'Email',
+                                    controller: _emailController,
+                                  ),
+                                  SizedBox(
+                                    height: 12.h,
+                                  ),
+                                  TxtInput(
+                                    hint: 'Password',
+                                    controller: _passwordController,
+                                    password: true,
+                                    suffix: Icon(
+                                      Icons.visibility,
+                                      color: MyColors.secondaryBlack,
+                                      size: 24.sp,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 60.h,
+                                  ),
+                                  PrimaryBtn(
+                                    txt: 'Login',
+                                    onTap: () {
+                                      if (!isLoading) {
+                                        _handleLogin(
+                                          _emailController.value.text,
+                                          _passwordController.value.text,
+                                          context,
+                                        );
+                                        setState(() {
+                                          isLoading = true;
+                                        });
+                                      }
+                                    },
+                                    child: isLoading
+                                        ? const CircularProgressIndicator(
+                                            color: MyColors.primaryWhite,
+                                          )
+                                        : null,
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          CupertinoButton(
-                            padding: const EdgeInsets.all(0),
-                            child: Text(
-                              'Sign Up',
-                              style: TxtTheme.med16,
+                          Padding(
+                            padding: EdgeInsets.only(
+                              bottom: 40.h,
                             ),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                CupertinoPageRoute(
-                                  builder: (ctx) => const SignupScr(),
-                                ),
-                              );
-                            },
+                            child: Align(
+                              alignment: Alignment.bottomCenter,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'Don\'t have an account? ',
+                                    style: TxtTheme.med16.copyWith(
+                                      color: MyColors.secondaryBlack,
+                                    ),
+                                  ),
+                                  CupertinoButton(
+                                    padding: const EdgeInsets.all(0),
+                                    child: Text(
+                                      'Sign Up',
+                                      style: TxtTheme.med16,
+                                    ),
+                                    onPressed: () {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        CupertinoPageRoute(
+                                          builder: (ctx) => const SignupScr(),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                ],
+                              ),
+                            ),
                           )
                         ],
                       ),
                     ),
                   ),
-                )
-              ],
+                ],
+              ),
             ),
           ),
         ),
