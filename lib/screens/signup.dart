@@ -216,7 +216,7 @@ class _SignupScrState extends State<SignupScr> {
                 txt: 'Sign up',
                 child: isLoading
                     ? const CircularProgressIndicator(
-                        color: MyColors.deepBlack,
+                        color: MyColors.primaryWhite,
                       )
                     : null,
                 onTap: isLoading

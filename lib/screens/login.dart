@@ -126,7 +126,7 @@ class _LoginScrState extends State<LoginScr> {
                           },
                           child: isLoading
                               ? const CircularProgressIndicator(
-                                  color: MyColors.deepBlack,
+                                  color: MyColors.primaryWhite,
                                 )
                               : null,
                         ),
