@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_auth_rest/firebase_auth_rest.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -5,7 +6,7 @@ import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 
 class ProfilePage extends StatelessWidget {
-  final UserData? data;
+  final User? data;
   const ProfilePage({
     Key? key,
     this.data,

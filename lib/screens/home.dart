@@ -1,4 +1,4 @@
-import 'package:firebase_auth_rest/firebase_auth_rest.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -10,11 +10,9 @@ import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 
 class HomeScr extends StatefulWidget {
-  final UserData? data;
-  final FirebaseAccount? account;
+  final UserCredential? account;
   const HomeScr({
     Key? key,
-    this.data,
     this.account,
   }) : super(key: key);
   @override
@@ -36,7 +34,7 @@ class _HomeScrState extends State<HomeScr> {
       showAddPage: showAddPage,
     ),
     ProfilePage(
-      data: widget.data,
+      data: widget.account!.user,
     ),
   ];
   int _pageIndex = 1;
@@ -44,7 +42,6 @@ class _HomeScrState extends State<HomeScr> {
 
   @override
   void dispose() {
-    widget.account?.dispose();
     super.dispose();
   }
 
@@ -78,12 +75,13 @@ class _HomeScrState extends State<HomeScr> {
               color: MyColors.primaryWhite,
               fontSize: 10.sp,
             ),
-            onTap: (value) {
+            onTap: (value) async {
               if (value > 0) {
                 setState(() {
                   _pageIndex = value;
                 });
               } else {
+                await FirebaseAuth.instance.signOut();
                 Navigator.pushReplacement(
                   context,
                   CupertinoPageRoute(
