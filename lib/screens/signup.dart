@@ -365,7 +365,12 @@ class _SignupScrState extends State<SignupScr> {
           context,
           CupertinoPageRoute(
             builder: (ctx) => HomeScr(
-              account: response.response,
+              data: UserData(
+                email: _emailController.value.text,
+                imgurl: _imgurl,
+                name: _nameController.value.text,
+                phone: _phoneController.value.text,
+              ),
             ),
           ),
           (route) => !Navigator.canPop(context),

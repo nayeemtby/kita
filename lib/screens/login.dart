@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -206,12 +207,36 @@ class _LoginScrState extends State<LoginScr> {
     );
     if (response.error == null && response.response != null) {
       if (response.response!.user != null) {
+        DocumentSnapshot<Map<String, dynamic>> doc;
+        UserData data;
+        try {
+          doc = await FirebaseFirestore.instance
+              .doc(
+                'users/' + response.response!.user!.uid.toString(),
+              )
+              .get();
+
+          if (doc.data() != null) {
+            Map<String, dynamic> tmp = doc.data()!;
+            data = UserData(
+              email: tmp['email'],
+              phone: tmp['phone'],
+              name: tmp['name'],
+              imgurl: tmp['imgurl'],
+            );
+          } else {
+            data = const UserData();
+          }
+        } catch (e) {
+          print(e);
+          data = const UserData();
+        }
         ScaffoldMessenger.of(context).clearMaterialBanners();
         Navigator.pushAndRemoveUntil(
           context,
           CupertinoPageRoute(
             builder: (ctx) => HomeScr(
-              account: response.response,
+              data: data,
             ),
           ),
           (route) => !Navigator.canPop(context),

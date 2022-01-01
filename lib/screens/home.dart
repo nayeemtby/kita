@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kita/screens/adduser.dart';
+import 'package:kita/screens/components/my_models.dart';
 import 'package:kita/screens/profile.dart';
 import 'package:kita/screens/users.dart';
 import 'package:kita/screens/welcome.dart';
@@ -11,9 +12,11 @@ import 'theme/texttheme.dart';
 
 class HomeScr extends StatefulWidget {
   final UserCredential? account;
+  final UserData data;
   const HomeScr({
     Key? key,
     this.account,
+    required this.data,
   }) : super(key: key);
   @override
   State<HomeScr> createState() => _HomeScrState();
@@ -34,7 +37,7 @@ class _HomeScrState extends State<HomeScr> {
       showAddPage: showAddPage,
     ),
     ProfilePage(
-      data: widget.account!.user,
+      data: widget.data,
     ),
   ];
   int _pageIndex = 1;
