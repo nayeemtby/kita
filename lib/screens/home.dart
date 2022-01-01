@@ -58,58 +58,60 @@ class _HomeScrState extends State<HomeScr> {
     } else {
       _page = pages[_pageIndex - 1];
     }
-    return Scaffold(
-      bottomNavigationBar: ClipRRect(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(50.r),
-          topRight: Radius.circular(50.r),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _pageIndex,
-          backgroundColor: MyColors.deepBlack,
-          selectedLabelStyle: TxtTheme.reg13.copyWith(
-            color: MyColors.primaryWhite,
+    return SafeArea(
+      child: Scaffold(
+        bottomNavigationBar: ClipRRect(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(50.r),
+            topRight: Radius.circular(50.r),
           ),
-          selectedItemColor: MyColors.primaryWhite,
-          unselectedItemColor: MyColors.primaryWhite,
-          iconSize: 18.r,
-          unselectedLabelStyle: TxtTheme.reg13.copyWith(
-            color: MyColors.primaryWhite,
-            fontSize: 10.sp,
+          child: BottomNavigationBar(
+            currentIndex: _pageIndex,
+            backgroundColor: MyColors.deepBlack,
+            selectedLabelStyle: TxtTheme.reg13.copyWith(
+              color: MyColors.primaryWhite,
+            ),
+            selectedItemColor: MyColors.primaryWhite,
+            unselectedItemColor: MyColors.primaryWhite,
+            iconSize: 18.r,
+            unselectedLabelStyle: TxtTheme.reg13.copyWith(
+              color: MyColors.primaryWhite,
+              fontSize: 10.sp,
+            ),
+            onTap: (value) {
+              if (value > 0) {
+                setState(() {
+                  _pageIndex = value;
+                });
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                    builder: (ctx) => const WelcomeScr(),
+                  ),
+                );
+              }
+            },
+            items: const [
+              BottomNavigationBarItem(
+                label: 'Logout',
+                icon: Icon(Icons.exit_to_app),
+              ),
+              BottomNavigationBarItem(
+                label: 'Users',
+                icon: Icon(Icons.person_outline_outlined),
+              ),
+              BottomNavigationBarItem(
+                label: 'Profile',
+                icon: Icon(Icons.perm_contact_calendar_outlined),
+              )
+            ],
           ),
-          onTap: (value) {
-            if (value > 0) {
-              setState(() {
-                _pageIndex = value;
-              });
-            } else {
-              Navigator.pushReplacement(
-                context,
-                CupertinoPageRoute(
-                  builder: (ctx) => const WelcomeScr(),
-                ),
-              );
-            }
-          },
-          items: const [
-            BottomNavigationBarItem(
-              label: 'Logout',
-              icon: Icon(Icons.exit_to_app),
-            ),
-            BottomNavigationBarItem(
-              label: 'Users',
-              icon: Icon(Icons.person_outline_outlined),
-            ),
-            BottomNavigationBarItem(
-              label: 'Profile',
-              icon: Icon(Icons.perm_contact_calendar_outlined),
-            )
-          ],
         ),
-      ),
-      body: SizedBox(
-        width: double.infinity,
-        child: SafeArea(child: _page),
+        body: SizedBox(
+          width: double.infinity,
+          child: _page,
+        ),
       ),
     );
   }

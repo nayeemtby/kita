@@ -23,9 +23,9 @@ class _LoginScrState extends State<LoginScr> {
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: GestureDetector(
+    return SafeArea(
+      child: Scaffold(
+        body: GestureDetector(
           onTap: () {
             FocusScopeNode currentFocus = FocusScope.of(context);
 
