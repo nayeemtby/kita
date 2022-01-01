@@ -227,7 +227,7 @@ class _LoginScrState extends State<LoginScr> {
     if (response.runtimeType == FirebaseAccount) {
       ScaffoldMessenger.of(context).clearMaterialBanners();
       final UserData? data = await (response as FirebaseAccount).getDetails();
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
         context,
         CupertinoPageRoute(
           builder: (ctx) => HomeScr(
@@ -235,10 +235,11 @@ class _LoginScrState extends State<LoginScr> {
             account: response,
           ),
         ),
+        (route) => !Navigator.canPop(context),
       );
     }
-    setState(() {
-      isLoading = false;
-    });
+    // setState(() {
+    //   isLoading = false;
+    // });
   }
 }
