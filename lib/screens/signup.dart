@@ -431,10 +431,30 @@ class _SignupScrState extends State<SignupScr> {
       type: FileType.image,
     );
     if (result != null) {
-      setState(() {
-        _imageData = result.files[0].bytes;
-        _imgExt = result.files[0].extension ?? '';
-      });
+      if (result.files[0].size > 2097152) {
+        showCupertinoDialog(
+          context: context,
+          builder: (ctx) => CupertinoAlertDialog(
+            title: Text(
+              'Image size cannot be larger than 2MB',
+              style: TxtTheme.med18,
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      } else {
+        setState(() {
+          _imageData = result.files[0].bytes;
+          _imgExt = result.files[0].extension ?? '';
+        });
+      }
     }
   }
 }
