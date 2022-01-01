@@ -1,9 +1,11 @@
 import 'dart:typed_data';
-import 'package:firebase_auth_rest/firebase_auth_rest.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kita/screens/components/firebase.dart';
+import 'package:kita/screens/components/my_models.dart';
 import 'package:kita/screens/home.dart';
 import 'package:kita/screens/login.dart';
 import 'theme/colors.dart';
@@ -11,6 +13,7 @@ import 'theme/texttheme.dart';
 import 'components/input.dart';
 import 'components/buttons.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SignupScr extends StatefulWidget {
   const SignupScr({
@@ -24,9 +27,21 @@ class SignupScr extends StatefulWidget {
 class _SignupScrState extends State<SignupScr> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   Uint8List? _imageData;
+  String _imgExt = '';
   bool isLoading = false;
   int _gender = 0;
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -130,6 +145,7 @@ class _SignupScrState extends State<SignupScr> {
                       ),
                       TxtInput(
                         hint: 'Name',
+                        controller: _nameController,
                       ),
                       SizedBox(
                         height: 12.h,
@@ -156,6 +172,7 @@ class _SignupScrState extends State<SignupScr> {
                       ),
                       TxtInput(
                         hint: 'Mobile Number',
+                        controller: _phoneController,
                         suffix: Text(
                           'Verify',
                           style: TxtTheme.reg15.copyWith(
@@ -229,9 +246,7 @@ class _SignupScrState extends State<SignupScr> {
                       PrimaryBtn(
                         txt: 'Sign up',
                         child: isLoading
-                            ? const CircularProgressIndicator(
-                                color: MyColors.primaryWhite,
-                              )
+                            ? const CupertinoActivityIndicator()
                             : null,
                         onTap: isLoading
                             ? null
@@ -287,38 +302,124 @@ class _SignupScrState extends State<SignupScr> {
   }
 
   void _handleSignUp(String email, String password, BuildContext ctx) async {
-    dynamic response;
-    try {
-      response = await signUp(email, password);
-    } catch (e) {
+    ExceptionAwareResponse<UserCredential> response;
+    response = await signUp(email, password);
+    if (response.error == null && response.response != null) {
+      if (response.response!.user != null) {
+        String _imgurl = '';
+        late Reference imageRef;
+        late TaskSnapshot snap;
+        // Upload Image if imageData is not null
+        if (_imageData != null) {
+          imageRef = FirebaseStorage.instance.ref().child(
+                'profileImage/' +
+                    response.response!.user!.uid.toString() +
+                    '.' +
+                    _imgExt,
+              );
+          snap = await imageRef.putData(_imageData!);
+          _imgurl = await snap.ref.getDownloadURL();
+        }
+
+        // Try creating document in firestore
+        try {
+          CollectionReference users =
+              FirebaseFirestore.instance.collection('users');
+          DocumentReference<Object?> ref = users.doc(
+            response.response!.user!.uid.toString(),
+          );
+
+          ref.set(
+            {
+              'name': _nameController.value.text,
+              'email': _emailController.value.text,
+              'phone': _phoneController.value.text,
+              'gender': _gender,
+              'imgurl': _imgurl,
+            },
+          );
+        } catch (e) {
+          ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+          ScaffoldMessenger.of(context).showMaterialBanner(
+            MaterialBanner(
+              content: Text(
+                'Failed to create profile: $e',
+              ),
+              actions: [
+                GestureDetector(
+                  onTap: () {
+                    ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+                  },
+                  child: Icon(
+                    Icons.close,
+                    size: 18.sp,
+                  ),
+                ),
+              ],
+            ),
+          );
+          return;
+        }
+        ScaffoldMessenger.of(context).clearMaterialBanners();
+        Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(
+            builder: (ctx) => HomeScr(
+              data: UserData(
+                email: _emailController.value.text,
+                imgurl: _imgurl,
+                name: _nameController.value.text,
+                phone: _phoneController.value.text,
+              ),
+            ),
+          ),
+          (route) => !Navigator.canPop(context),
+        );
+      } else {
+        setState(
+          () {
+            isLoading = false;
+          },
+        );
+      }
+    } else if (response.response == null) {
+      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
       ScaffoldMessenger.of(context).showMaterialBanner(
         MaterialBanner(
-          content: Text('Error: ${e.toString()}'),
+          content: const Text(
+            'Sign up failed: Unknown Error',
+          ),
           actions: [
-            InkWell(
+            GestureDetector(
               onTap: () {
-                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
               },
-              child: const Icon(Icons.close),
+              child: Icon(
+                Icons.close,
+                size: 18.sp,
+              ),
             ),
           ],
         ),
       );
-      setState(() {
-        isLoading = false;
-      });
-    }
-    if (response.runtimeType == FirebaseAccount) {
-      ScaffoldMessenger.of(context).clearMaterialBanners();
-      response = response as FirebaseAccount;
-      final UserData? data = await response.getDetails();
-      Navigator.pushReplacement(
-        context,
-        CupertinoPageRoute(
-          builder: (ctx) => HomeScr(
-            data: data,
-            account: response,
+    } else {
+      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text(
+            'Sign up failed: ${response.error}',
           ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+              },
+              child: Icon(
+                Icons.close,
+                size: 18.sp,
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -330,9 +431,30 @@ class _SignupScrState extends State<SignupScr> {
       type: FileType.image,
     );
     if (result != null) {
-      setState(() {
-        _imageData = result.files[0].bytes;
-      });
+      if (result.files[0].size > 2097152) {
+        showCupertinoDialog(
+          context: context,
+          builder: (ctx) => CupertinoAlertDialog(
+            title: Text(
+              'Image size cannot be larger than 2MB',
+              style: TxtTheme.med18,
+            ),
+            actions: [
+              CupertinoDialogAction(
+                child: const Text('OK'),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              ),
+            ],
+          ),
+        );
+      } else {
+        setState(() {
+          _imageData = result.files[0].bytes;
+          _imgExt = result.files[0].extension ?? '';
+        });
+      }
     }
   }
 }

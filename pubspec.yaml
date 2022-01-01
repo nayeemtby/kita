@@ -28,7 +28,9 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   http: any
-  firebase_auth_rest: any
+  firebase_storage: any
+  cloud_firestore: any
+  firebase_auth: any
   flutter:
     sdk: flutter
 

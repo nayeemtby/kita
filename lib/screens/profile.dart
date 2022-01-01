@@ -1,18 +1,27 @@
-import 'package:firebase_auth_rest/firebase_auth_rest.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:kita/screens/components/my_models.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 
 class ProfilePage extends StatelessWidget {
-  final UserData? data;
+  final UserData data;
   const ProfilePage({
     Key? key,
-    this.data,
+    required this.data,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    String bgTxt = '';
+    data.name.split(' ').forEach(
+      (element) {
+        bgTxt += element[0];
+      },
+    );
+    bgTxt = bgTxt.toUpperCase();
+    DateTime? date = FirebaseAuth.instance.currentUser!.metadata.creationTime;
     return Column(
       children: [
         Padding(
@@ -48,24 +57,48 @@ class ProfilePage extends StatelessWidget {
                     ),
                     child: CircleAvatar(
                       radius: 88.r,
+                      foregroundImage: data.imgurl.isEmpty
+                          ? null
+                          : NetworkImage(
+                              data.imgurl,
+                            ),
+                      child: bgTxt.isEmpty
+                          ? null
+                          : SizedBox.square(
+                              dimension: 88.r * 2 / 1.414,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  bgTxt,
+                                  style: TxtTheme.montyBig.copyWith(
+                                    color: MyColors.primaryWhite,
+                                    fontSize: 88.r,
+                                  ),
+                                ),
+                              ),
+                            ),
                     ),
                   ),
                   Text(
-                    'Mr. John Doe',
+                    data.name.isEmpty ? 'No Name' : data.name,
                     style: TxtTheme.med32
                         .copyWith(color: MyColors.deepBlack, fontSize: 36.sp),
                   ),
                   SizedBox(
-                    height: 12.h,
+                    height: 8.h,
                   ),
                   Text(
-                    '${data == null ? 'user@host.domain' : data!.email ?? 'Has no Email'}\nPassword',
+                    data.email.isEmpty ? 'No email' : data.email,
                     textAlign: TextAlign.center,
                     style: TxtTheme.med14
                         .copyWith(color: MyColors.deepBlack, height: 1.5.h),
                   ),
+                  SizedBox(
+                    height: 4.h,
+                  ),
                   Text(
-                    'Phone: *88012xxxxxxxx',
+                    data.phone.isEmpty ? 'No phone number' : data.phone,
                     style: TxtTheme.med18.copyWith(
                       color: MyColors.deepBlack,
                     ),
@@ -79,7 +112,9 @@ class ProfilePage extends StatelessWidget {
                       padding: EdgeInsets.symmetric(vertical: 8.h),
                       child: Center(
                         child: Text(
-                          'Created on 12/12/2021 06.30 AM',
+                          date == null
+                              ? 'Created on unknown date'
+                              : 'Created on ${date.day}/${date.month}/${date.year} ${date.hour}:${date.minute}',
                           style: TxtTheme.med14.copyWith(
                             color: MyColors.primaryGray,
                           ),

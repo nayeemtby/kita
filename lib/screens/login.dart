@@ -1,8 +1,10 @@
-import 'package:firebase_auth_rest/firebase_auth_rest.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:kita/screens/components/firebase.dart';
+import 'package:kita/screens/components/my_models.dart';
 import 'package:kita/screens/home.dart';
 import 'package:kita/screens/signup.dart';
 import 'theme/colors.dart';
@@ -196,25 +198,92 @@ class _LoginScrState extends State<LoginScr> {
   }
 
   void _handleLogin(String email, String password, BuildContext ctx) async {
-    dynamic response;
+    ExceptionAwareResponse<UserCredential> response = ExceptionAwareResponse(
+      response: null,
+    );
+    response = await login(
+      email,
+      password,
+    );
+    if (response.error == null && response.response != null) {
+      if (response.response!.user != null) {
+        DocumentSnapshot<Map<String, dynamic>> doc;
+        UserData data;
+        try {
+          doc = await FirebaseFirestore.instance
+              .doc(
+                'users/' + response.response!.user!.uid.toString(),
+              )
+              .get();
 
-    try {
-      response = await login(
-        email,
-        password,
-      );
-    } catch (e) {
+          if (doc.data() != null) {
+            Map<String, dynamic> tmp = doc.data()!;
+            data = UserData(
+              email: tmp['email'],
+              phone: tmp['phone'],
+              name: tmp['name'],
+              imgurl: tmp['imgurl'],
+            );
+          } else {
+            data = const UserData();
+          }
+        } catch (e) {
+          print(e);
+          data = const UserData();
+        }
+        ScaffoldMessenger.of(context).clearMaterialBanners();
+        Navigator.pushAndRemoveUntil(
+          context,
+          CupertinoPageRoute(
+            builder: (ctx) => HomeScr(
+              data: data,
+            ),
+          ),
+          (route) => !Navigator.canPop(context),
+        );
+      } else {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else if (response.error == null && response.response == null) {
+      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
       ScaffoldMessenger.of(context).showMaterialBanner(
         MaterialBanner(
-          content: Text('Error: ${e.toString()}'),
+          content: const Text(
+            'Login Failed: Unknown Error',
+          ),
           actions: [
-            InkWell(
+            GestureDetector(
               onTap: () {
-                ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
               },
               child: Icon(
                 Icons.close,
-                size: 24.sp,
+                size: 18.sp,
+              ),
+            ),
+          ],
+        ),
+      );
+      setState(() {
+        isLoading = false;
+      });
+    } else {
+      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+      ScaffoldMessenger.of(context).showMaterialBanner(
+        MaterialBanner(
+          content: Text(
+            'Login failed: ${response.error} ',
+          ),
+          actions: [
+            GestureDetector(
+              onTap: () {
+                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+              },
+              child: Icon(
+                Icons.close,
+                size: 18.sp,
               ),
             ),
           ],
@@ -224,22 +293,5 @@ class _LoginScrState extends State<LoginScr> {
         isLoading = false;
       });
     }
-    if (response.runtimeType == FirebaseAccount) {
-      ScaffoldMessenger.of(context).clearMaterialBanners();
-      final UserData? data = await (response as FirebaseAccount).getDetails();
-      Navigator.pushAndRemoveUntil(
-        context,
-        CupertinoPageRoute(
-          builder: (ctx) => HomeScr(
-            data: data,
-            account: response,
-          ),
-        ),
-        (route) => !Navigator.canPop(context),
-      );
-    }
-    // setState(() {
-    //   isLoading = false;
-    // });
   }
 }
