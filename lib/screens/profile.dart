@@ -14,6 +14,13 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    String bgTxt = '';
+    data.name.split(' ').forEach(
+      (element) {
+        bgTxt += element[0];
+      },
+    );
+    bgTxt = bgTxt.toUpperCase();
     DateTime? date = FirebaseAuth.instance.currentUser!.metadata.creationTime;
     return Column(
       children: [
@@ -54,6 +61,22 @@ class ProfilePage extends StatelessWidget {
                           ? null
                           : NetworkImage(
                               data.imgurl,
+                            ),
+                      child: bgTxt.isEmpty
+                          ? null
+                          : SizedBox.square(
+                              dimension: 88.r * 2 / 1.414,
+                              child: FittedBox(
+                                alignment: Alignment.center,
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  bgTxt,
+                                  style: TxtTheme.montyBig.copyWith(
+                                    color: MyColors.primaryWhite,
+                                    fontSize: 88.r,
+                                  ),
+                                ),
+                              ),
                             ),
                     ),
                   ),
