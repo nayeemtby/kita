@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -56,7 +57,10 @@ class _HomeScrState extends State<HomeScr> {
         parentSetState: setState,
       );
     } else {
-      _page = pages[_pageIndex - 1];
+      _page = IndexedStack(
+        children: pages,
+        index: _pageIndex - 1,
+      );
     }
     return Scaffold(
       bottomNavigationBar: ClipRRect(
