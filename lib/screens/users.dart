@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -7,6 +9,7 @@ import 'package:kita/screens/components/users.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
 import 'components/input.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class UsersPage extends StatefulWidget {
   final void Function() showAddPage;
@@ -20,6 +23,7 @@ class UsersPage extends StatefulWidget {
 }
 
 class _UsersPageState extends State<UsersPage> {
+  final String currentUser = FirebaseAuth.instance.currentUser!.uid;
   late QuerySnapshot snap;
   bool isLoading = true;
   @override
@@ -64,7 +68,7 @@ class _UsersPageState extends State<UsersPage> {
                       size: 24.sp,
                     ),
                     Text(
-                      'Total Users\n${isLoading ? '--' : snap.docs.length}',
+                      'Total Users\n${isLoading ? '--' : snap.docs.length - 1}',
                       textAlign: TextAlign.center,
                       style: TxtTheme.med14.copyWith(
                         color: MyColors.deepBlack,
@@ -152,6 +156,9 @@ class _UsersPageState extends State<UsersPage> {
                       children: List.generate(
                         snap.docs.length,
                         (index) {
+                          if (snap.docs[index].id == currentUser) {
+                            return const SizedBox();
+                          }
                           Map<String, dynamic> data =
                               snap.docs[index].data() as Map<String, dynamic>;
                           return UserItem(
@@ -200,11 +207,66 @@ class _UsersPageState extends State<UsersPage> {
   }
 
   void removeUser(String id) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => WillPopScope(
+        onWillPop: () async {
+          return false;
+        },
+        child: CupertinoAlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                'Removing User',
+                style: TxtTheme.med16,
+              ),
+              SizedBox(
+                height: 16.h,
+              ),
+              CupertinoActivityIndicator(
+                radius: 10.r,
+              ),
+            ],
+          ),
+          actions: const [],
+        ),
+      ),
+    );
+    final FirebaseAuth authInstance = FirebaseAuth.instanceFor(
+      app: Firebase.app(
+        'worker',
+      ),
+    );
+    DocumentReference<Map<String, dynamic>> pskDoc =
+        FirebaseFirestore.instance.collection('psk').doc(id);
+    DocumentReference<Map<String, dynamic>> dataDoc =
+        FirebaseFirestore.instance.collection('users').doc(id);
+    String email = (await dataDoc.get()).data()!['email'];
+    String psk = (await pskDoc.get()).data()!['psk'];
+    await (await authInstance.signInWithEmailAndPassword(
+      email: email,
+      password: psk,
+    ))
+        .user!
+        .delete();
+    await pskDoc.delete();
+    await dataDoc.delete();
+    try {
+      await FirebaseStorage.instance
+          .ref('profileImage')
+          .child(id + '.jpg')
+          .delete();
+    } catch (e) {
+      await FirebaseStorage.instance
+          .ref('profileImage')
+          .child(id + '.png')
+          .delete();
+    }
+    Navigator.pop(context);
     setState(() {
       isLoading = true;
     });
-    CollectionReference col = FirebaseFirestore.instance.collection('users');
-    await col.doc(id).delete();
     getUsers();
   }
 }

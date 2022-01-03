@@ -159,8 +159,8 @@ class Alert extends StatelessWidget {
             'Yes',
           ),
           onPressed: () {
-            ontap(id);
             Navigator.pop(context);
+            ontap(id);
           },
         )
       ],
