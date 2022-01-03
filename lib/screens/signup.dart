@@ -306,13 +306,15 @@ class _SignupScrState extends State<SignupScr> {
 
   void _handleSignUp(String email, String password, BuildContext ctx) async {
     ExceptionAwareResponse<UserCredential> response;
-    password = sha256
-        .convert(
-          utf8.encode(
-            password + 'salt',
-          ),
-        )
-        .toString();
+    if (password.isNotEmpty) {
+      password = sha256
+          .convert(
+            utf8.encode(
+              password + 'salt',
+            ),
+          )
+          .toString();
+    }
     response = await signUp(email, password);
     if (response.error == null && response.response != null) {
       if (response.response!.user != null) {
