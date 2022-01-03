@@ -17,7 +17,9 @@ class ProfilePage extends StatelessWidget {
     String bgTxt = '';
     data.name.split(' ').forEach(
       (element) {
-        bgTxt += element[0];
+        if (element.isNotEmpty) {
+          bgTxt += element[0];
+        }
       },
     );
     bgTxt = bgTxt.toUpperCase();
