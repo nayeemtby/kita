@@ -142,7 +142,9 @@ class Alert extends StatelessWidget {
     return CupertinoAlertDialog(
       title: Text(
         'Remove this user?',
-        style: TxtTheme.med16,
+        style: TxtTheme.med16.copyWith(
+          color: CupertinoColors.destructiveRed,
+        ),
       ),
       actions: [
         CupertinoDialogAction(
