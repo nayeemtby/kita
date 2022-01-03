@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -14,6 +15,7 @@ import 'components/input.dart';
 import 'components/buttons.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:crypto/crypto.dart';
 
 class SignupScr extends StatefulWidget {
   const SignupScr({
@@ -304,14 +306,21 @@ class _SignupScrState extends State<SignupScr> {
 
   void _handleSignUp(String email, String password, BuildContext ctx) async {
     ExceptionAwareResponse<UserCredential> response;
+    password = sha256
+        .convert(
+          utf8.encode(
+            password + 'salt',
+          ),
+        )
+        .toString();
     response = await signUp(email, password);
     if (response.error == null && response.response != null) {
       if (response.response!.user != null) {
         String _imgurl = '';
-        late Reference imageRef;
-        late TaskSnapshot snap;
         // Upload Image if imageData is not null
         if (_imageData != null) {
+          Reference imageRef;
+          TaskSnapshot snap;
           imageRef = FirebaseStorage.instance.ref().child(
                 'profileImage/' +
                     response.response!.user!.uid.toString() +
@@ -324,13 +333,21 @@ class _SignupScrState extends State<SignupScr> {
 
         // Try creating document in firestore
         try {
-          CollectionReference users =
-              FirebaseFirestore.instance.collection('users');
-          DocumentReference<Object?> ref = users.doc(
-            response.response!.user!.uid.toString(),
+          DocumentReference<Object?> pskDoc =
+              FirebaseFirestore.instance.collection('psk').doc(
+                    response.response!.user!.uid.toString(),
+                  );
+          await pskDoc.set(
+            {
+              'psk': password,
+            },
           );
+          DocumentReference<Object?> userDoc =
+              FirebaseFirestore.instance.collection('users').doc(
+                    response.response!.user!.uid.toString(),
+                  );
 
-          ref.set(
+          await userDoc.set(
             {
               'name': _nameController.value.text,
               'email': _emailController.value.text,

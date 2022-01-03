@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -198,6 +200,13 @@ class _LoginScrState extends State<LoginScr> {
   }
 
   void _handleLogin(String email, String password, BuildContext ctx) async {
+    password = sha256
+        .convert(
+          utf8.encode(
+            password + 'salt',
+          ),
+        )
+        .toString();
     ExceptionAwareResponse<UserCredential> response = ExceptionAwareResponse(
       response: null,
     );
