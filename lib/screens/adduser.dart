@@ -265,6 +265,10 @@ class _AddUserPageState extends State<AddUserPage> {
   }
 
   void _handleSignUp(String email, String password, BuildContext ctx) async {
+    showCupertinoDialog(
+      context: context,
+      builder: (ctx) => const LoadingDialog(),
+    );
     ExceptionAwareResponse<UserCredential> response;
     password = sha256
         .convert(
@@ -286,10 +290,7 @@ class _AddUserPageState extends State<AddUserPage> {
           Reference imageRef;
           TaskSnapshot snap;
           imageRef = FirebaseStorage.instance.ref().child(
-                'profileImage/' +
-                    response.response!.user!.uid.toString() +
-                    '.' +
-                    _imgExt,
+                'profileImage/' + response.response!.user!.uid.toString(),
               );
           snap = await imageRef.putData(_imageData!);
           _imgurl = await snap.ref.getDownloadURL();
@@ -321,29 +322,20 @@ class _AddUserPageState extends State<AddUserPage> {
             },
           );
         } catch (e) {
-          ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-          ScaffoldMessenger.of(context).showMaterialBanner(
-            MaterialBanner(
-              content: Text(
-                'Failed to create profile: $e',
-              ),
-              actions: [
-                GestureDetector(
-                  onTap: () {
-                    ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-                  },
-                  child: Icon(
-                    Icons.close,
-                    size: 18.sp,
-                  ),
-                ),
-              ],
+          Navigator.pop(context);
+          setState(() {
+            isLoading = false;
+          });
+          showCupertinoDialog(
+            context: context,
+            builder: (ctx) => ErrorDialog(
+              message: e.toString(),
+              title: 'Profile Creation Failed',
             ),
           );
-          return;
         }
-        ScaffoldMessenger.of(context).clearMaterialBanners();
         widget.authInstance.signOut();
+        Navigator.pop(context);
         widget.parentSetState(() {});
       } else {
         setState(
@@ -353,43 +345,27 @@ class _AddUserPageState extends State<AddUserPage> {
         );
       }
     } else if (response.response == null) {
-      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-      ScaffoldMessenger.of(context).showMaterialBanner(
-        MaterialBanner(
-          content: const Text(
-            'Sign up failed: Unknown Error',
-          ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-              },
-              child: Icon(
-                Icons.close,
-                size: 18.sp,
-              ),
-            ),
-          ],
+      Navigator.pop(context);
+      setState(() {
+        isLoading = false;
+      });
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => ErrorDialog(
+          title: 'Sign Up Failed',
+          message: response.error.toString(),
         ),
       );
     } else {
-      ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-      ScaffoldMessenger.of(context).showMaterialBanner(
-        MaterialBanner(
-          content: Text(
-            'Sign up failed: ${response.error}',
-          ),
-          actions: [
-            GestureDetector(
-              onTap: () {
-                ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
-              },
-              child: Icon(
-                Icons.close,
-                size: 18.sp,
-              ),
-            ),
-          ],
+      Navigator.pop(context);
+      setState(() {
+        isLoading = false;
+      });
+      showCupertinoDialog(
+        context: context,
+        builder: (ctx) => ErrorDialog(
+          title: 'Sign Up Failed',
+          message: response.error,
         ),
       );
     }
@@ -426,5 +402,70 @@ class _AddUserPageState extends State<AddUserPage> {
         });
       }
     }
+  }
+}
+
+class LoadingDialog extends StatelessWidget {
+  const LoadingDialog({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        return false;
+      },
+      child: CupertinoAlertDialog(
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              'Creating User',
+              style: TxtTheme.med16,
+            ),
+            SizedBox(
+              height: 16.h,
+            ),
+            CupertinoActivityIndicator(
+              radius: 10.r,
+            ),
+          ],
+        ),
+        actions: const [],
+      ),
+    );
+  }
+}
+
+class ErrorDialog extends StatelessWidget {
+  final String title;
+  final String message;
+  const ErrorDialog({
+    Key? key,
+    required this.title,
+    required this.message,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return CupertinoAlertDialog(
+      title: Text(
+        title,
+        style: TxtTheme.med18.copyWith(
+          color: CupertinoColors.destructiveRed,
+        ),
+      ),
+      content: Text(
+        message,
+        style: TxtTheme.med16,
+      ),
+      actions: [
+        CupertinoDialogAction(
+          child: const Text('OK'),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ],
+    );
   }
 }
