@@ -22,6 +22,7 @@ class LoginScr extends StatefulWidget {
 }
 
 class _LoginScrState extends State<LoginScr> {
+  bool hidePass = true;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool isLoading = false;
@@ -119,10 +120,20 @@ class _LoginScrState extends State<LoginScr> {
                                     hint: 'Password',
                                     controller: _passwordController,
                                     password: true,
-                                    suffix: Icon(
-                                      Icons.visibility,
-                                      color: MyColors.secondaryBlack,
-                                      size: 24.sp,
+                                    hidePassword: hidePass,
+                                    suffix: InkWell(
+                                      onTap: () {
+                                        setState(() {
+                                          hidePass = !hidePass;
+                                        });
+                                      },
+                                      child: Icon(
+                                        hidePass
+                                            ? Icons.visibility
+                                            : Icons.visibility_off_rounded,
+                                        color: MyColors.secondaryBlack,
+                                        size: 24.sp,
+                                      ),
                                     ),
                                   ),
                                   SizedBox(
