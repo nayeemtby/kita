@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +9,7 @@ import 'package:kita/screens/users.dart';
 import 'package:kita/screens/welcome.dart';
 import 'theme/colors.dart';
 import 'theme/texttheme.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class HomeScr extends StatefulWidget {
   final UserCredential? account;
@@ -24,6 +24,11 @@ class HomeScr extends StatefulWidget {
 }
 
 class _HomeScrState extends State<HomeScr> {
+  final FirebaseAuth authInstance = FirebaseAuth.instanceFor(
+    app: Firebase.app(
+      'worker',
+    ),
+  );
   void showAddPage() {
     setState(() {
       _addUser = true;
@@ -47,6 +52,7 @@ class _HomeScrState extends State<HomeScr> {
   @override
   void dispose() {
     super.dispose();
+    // widget.authInstance.app.delete();
   }
 
   @override
@@ -55,6 +61,7 @@ class _HomeScrState extends State<HomeScr> {
       _addUser = false;
       _page = AddUserPage(
         parentSetState: setState,
+        authInstance: authInstance,
       );
     } else {
       _page = IndexedStack(

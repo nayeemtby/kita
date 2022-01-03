@@ -3,12 +3,14 @@ import 'my_models.dart';
 
 Future<ExceptionAwareResponse<UserCredential>> signUp(
   String email,
-  String password,
-) async {
+  String password, {
+  FirebaseAuth? instance,
+}) async {
+  instance ??= FirebaseAuth.instance;
   ExceptionAwareResponse<UserCredential> ret =
       ExceptionAwareResponse(response: null);
   try {
-    ret.response = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    ret.response = await instance.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
