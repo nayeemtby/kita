@@ -32,6 +32,7 @@ class _SignupScrState extends State<SignupScr> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   Uint8List? _imageData;
+  bool hidePass = true;
   bool isLoading = false;
   int _gender = 0;
   @override
@@ -161,11 +162,20 @@ class _SignupScrState extends State<SignupScr> {
                         TxtInput(
                           hint: 'Password',
                           password: true,
-                          controller: _passwordController,
-                          suffix: Icon(
-                            Icons.visibility,
-                            color: MyColors.secondaryBlack,
-                            size: 24.sp,
+                          hidePassword: hidePass,
+                          suffix: InkWell(
+                            onTap: () {
+                              setState(() {
+                                hidePass = !hidePass;
+                              });
+                            },
+                            child: Icon(
+                              hidePass
+                                  ? Icons.visibility
+                                  : Icons.visibility_off_rounded,
+                              color: MyColors.secondaryBlack,
+                              size: 24.sp,
+                            ),
                           ),
                         ),
                         SizedBox(

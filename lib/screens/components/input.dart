@@ -9,6 +9,7 @@ class TxtInput extends StatelessWidget {
   final Widget? suffix;
   final Widget? leading;
   final TextEditingController? controller;
+  final bool hidePassword;
   const TxtInput({
     Key? key,
     required this.hint,
@@ -16,13 +17,14 @@ class TxtInput extends StatelessWidget {
     this.suffix,
     this.leading,
     this.controller,
+    this.hidePassword = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return TextField(
       controller: controller,
-      obscureText: password,
+      obscureText: password ? hidePassword : false,
       cursorColor: MyColors.deepBlack,
       style: TxtTheme.reg16.copyWith(
         color: MyColors.primaryBlack,
