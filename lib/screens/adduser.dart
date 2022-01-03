@@ -177,12 +177,6 @@ class _AddUserPageState extends State<AddUserPage> {
                     TxtInput(
                       hint: 'Mobile Number',
                       controller: _phoneController,
-                      suffix: Text(
-                        'Verify',
-                        style: TxtTheme.reg15.copyWith(
-                          color: MyColors.primaryBlue,
-                        ),
-                      ),
                     ),
                     SizedBox(
                       height: 14.h,

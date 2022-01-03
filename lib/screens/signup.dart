@@ -184,12 +184,6 @@ class _SignupScrState extends State<SignupScr> {
                         TxtInput(
                           hint: 'Mobile Number',
                           controller: _phoneController,
-                          suffix: Text(
-                            'Verify',
-                            style: TxtTheme.reg15.copyWith(
-                              color: MyColors.primaryBlue,
-                            ),
-                          ),
                         ),
                         SizedBox(
                           height: 14.h,
