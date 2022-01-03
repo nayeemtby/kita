@@ -32,7 +32,6 @@ class _SignupScrState extends State<SignupScr> {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   Uint8List? _imageData;
-  String _imgExt = '';
   bool isLoading = false;
   int _gender = 0;
   @override
@@ -324,10 +323,7 @@ class _SignupScrState extends State<SignupScr> {
           Reference imageRef;
           TaskSnapshot snap;
           imageRef = FirebaseStorage.instance.ref().child(
-                'profileImage/' +
-                    response.response!.user!.uid.toString() +
-                    '.' +
-                    _imgExt,
+                'profileImage/' + response.response!.user!.uid.toString(),
               );
           snap = await imageRef.putData(_imageData!);
           _imgurl = await snap.ref.getDownloadURL();
@@ -481,7 +477,6 @@ class _SignupScrState extends State<SignupScr> {
       } else {
         setState(() {
           _imageData = result.files[0].bytes;
-          _imgExt = result.files[0].extension ?? '';
         });
       }
     }
