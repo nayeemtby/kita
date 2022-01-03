@@ -360,6 +360,9 @@ class _SignupScrState extends State<SignupScr> {
           );
         } catch (e) {
           ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+          setState(() {
+            isLoading = false;
+          });
           ScaffoldMessenger.of(context).showMaterialBanner(
             MaterialBanner(
               content: Text(
@@ -404,10 +407,13 @@ class _SignupScrState extends State<SignupScr> {
       }
     } else if (response.response == null) {
       ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showMaterialBanner(
         MaterialBanner(
-          content: const Text(
-            'Sign up failed: Unknown Error',
+          content: Text(
+            'Sign up failed: ${response.error}',
           ),
           actions: [
             GestureDetector(
@@ -424,6 +430,9 @@ class _SignupScrState extends State<SignupScr> {
       );
     } else {
       ScaffoldMessenger.of(context).removeCurrentMaterialBanner();
+      setState(() {
+        isLoading = false;
+      });
       ScaffoldMessenger.of(context).showMaterialBanner(
         MaterialBanner(
           content: Text(
