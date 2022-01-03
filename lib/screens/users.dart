@@ -182,8 +182,7 @@ class _UsersPageState extends State<UsersPage> {
 
   void getUsers() async {
     try {
-      CollectionReference col = FirebaseFirestore.instance.collection('users');
-      snap = await col.get();
+      snap = await FirebaseFirestore.instance.collection('users').get();
     } catch (e) {
       showCupertinoDialog(
         context: context,
@@ -253,15 +252,9 @@ class _UsersPageState extends State<UsersPage> {
     await pskDoc.delete();
     await dataDoc.delete();
     try {
-      await FirebaseStorage.instance
-          .ref('profileImage')
-          .child(id + '.jpg')
-          .delete();
+      await FirebaseStorage.instance.ref('profileImage').child(id).delete();
     } catch (e) {
-      await FirebaseStorage.instance
-          .ref('profileImage')
-          .child(id + '.png')
-          .delete();
+      print(e.toString());
     }
     Navigator.pop(context);
     setState(() {
